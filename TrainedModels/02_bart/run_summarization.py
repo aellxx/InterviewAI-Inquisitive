@@ -436,9 +436,9 @@ def main():
         )
 
     def preprocess_function(examples):
-        inputs = examples[text_column]
-        targets = examples[summary_column]
-        inputs = [prefix + inp for inp in inputs]
+        inputs = examples['Context']
+        targets = examples['Question']
+        inputs = [inp for inp in inputs]
         model_inputs = tokenizer(inputs, max_length=data_args.max_source_length, padding=padding, truncation=True)
 
         # Setup the tokenizer for targets
