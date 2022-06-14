@@ -436,7 +436,9 @@ def main():
         )
 
     def preprocess_function(examples):
+        # Context: the sentence
         inputs = examples['Context']
+        # Question: generated question from sentence
         targets = examples['Question']
         inputs = [inp for inp in inputs]
         model_inputs = tokenizer(inputs, max_length=data_args.max_source_length, padding=padding, truncation=True)
