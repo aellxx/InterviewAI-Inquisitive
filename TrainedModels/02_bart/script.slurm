@@ -11,6 +11,9 @@
 # Reserve CPU cores
 #SBATCH -c 4
 #
+# Need this for accessing scratch, according to https://portal.xsede.org/sdsc-expanse
+#SBATCH --constraint="lustre"
+#
 # Reserve RAM
 #SBATCH --mem=8G
 #
@@ -29,7 +32,7 @@ export WANDB_PROJECT=inquisitive1
 
 python ./run_summarization.py \
 	--model_name_or_path facebook/bart-base \
-	--output_dir ./model/inquisitive-questions \
+	--output_dir ~/scratch/model/inquisitive-questions-2 \
 	--overwrite_output_dir TRUE \
 	--train_file ./data/train.json \
 	--validation_file ./data/validation.json \
