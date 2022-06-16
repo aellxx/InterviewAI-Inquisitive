@@ -39,7 +39,9 @@ python ./run_summarization.py \
 	--report_to=wandb \
 	--per_device_train_batch_size 8 \
 	--per_device_eval_batch_size 8 \
-	--num_train_epochs 7
+	--num_train_epochs 7 \
+	--push_to_hub \
+	--hub_model_id kcarnold/inquisitive2
 
 echo "Done!"
 date
