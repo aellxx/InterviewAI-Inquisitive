@@ -1,7 +1,7 @@
 from transformers import BartForConditionalGeneration, BartTokenizer
 import streamlit as st
 
-@st.cache
+@st.cache_data
 def genQuestion(model_choice, context, tag):
     """Generate interview questions.
     
