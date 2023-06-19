@@ -1,13 +1,11 @@
 import streamlit as st
-import torch
-from pandas import options
 
 from backend import genQuestion
 
 # Examples for each models
 context_example = ''
 context_length = ''
-examples = [
+examples = [pan
     "Well, I was born in South Africa, lived there until I was 17. Came to North America of my own accord, against my parent’s wishes. And was in Canada for a few years. I started school there which is where I met my wife. Transferred down to the University of Pennsylvania and got a degree in physics, degree in business at Wharton. Came out to California with the intent of doing a PHD in the material science and physics [unintelligible] with an eye towards using that as an energy storage unit for electric vehicles. I ended up deferring that graduate work to start a couple to start a couple of area companies, one of which people have heard about, such as Pay Pal.",
     "Hi my name is Maria Sanchez, and I was born in Japan. I lived there for 20 years and moved out to the United States for college. I studied graphic design and later realized that my true passion was in fashion. It's lovely to see amazing models wearing my collection this fall, can't wait to show it to you guys soon. ",
     "I moved from Indiana to California when I was 19 to pursue my career as an young entrepreneur with a small loan of million dollars. My first start up was Blindr, where we sold blinders that auto adjusts depending on the time of the day. It was revolutionary, in only 2 years, we were able to accumulate 10 million customers and gain attraction internationally. We are planning to go further beyond this year with Blindr 2.0 where not only auto adjusts your blinders, but it also detects intruders who are violating your privacy at any time. ",
@@ -47,8 +45,6 @@ option = col1.selectbox(
                 'Please select a model.',
                 ('Base model', 'Lengthed model', 'Reverse model'))
 
-
-
 if option == 'Base model':
     st.write("This is the re-fine-tuned base model for our interview AI. It returns strings terminating in a question mark (?).")
 elif option == 'Lengthed model':
@@ -60,10 +56,8 @@ if option == 'Lengthed model':
     context_length = col3.selectbox('Length of response',
                                     ('1-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '81-90', '91+'))
 
-
 # Input fields
 input = st.text_area('Context', value=context_example)                                    # user inputs context to construct a response (str)
-
 
 if st.button('Submit') or st.session_state.button_sent:
     with st.spinner('Generating a response...'):
