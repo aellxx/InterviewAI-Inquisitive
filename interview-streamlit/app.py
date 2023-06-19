@@ -2,6 +2,8 @@ import streamlit as st
 import torch
 from pandas import options
 
+from backend import genQuestion
+
 # Examples for each models
 context_example = ''
 context_length = ''
@@ -69,6 +71,3 @@ if st.button('Submit') or st.session_state.button_sent:
         print(output)
     st.session_state.button_sent = True
     st.text_area(label="Generated Responses:", value=output, height=200)
-
-
-
