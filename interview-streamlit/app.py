@@ -26,8 +26,8 @@ if 'button_sent' not in st.session_state:
 col1, col2, col3 = st.columns(3)
 
 context_option = col2.selectbox(
-                'Feel free to choose one of our premade contexts',
-                ('Select one','Elon Musk', 'Fashion designer', 'Young entrepreneur', 'Michael Jordan')
+    'Feel free to choose one of our premade contexts',
+    ('Select one','Elon Musk', 'Fashion designer', 'Young entrepreneur', 'Michael Jordan')
 )
 
 if context_option == 'Select one':
@@ -42,8 +42,9 @@ else:
     context_example = examples[3]
 
 option = col1.selectbox(
-                'Please select a model.',
-                ('Base model', 'Lengthed model', 'Reverse model'))
+    'Please select a model.',
+    ('Base model', 'Lengthed model', 'Reverse model')
+)
 
 if option == 'Base model':
     st.write("This is the re-fine-tuned base model for our interview AI. It returns strings terminating in a question mark (?).")
@@ -53,11 +54,14 @@ elif option == 'Reverse model':
     st.write("This model asks a question that would have resulted in the context you provide (a.k.a. it traverses backward through the interview)")
 
 if option == 'Lengthed model':
-    context_length = col3.selectbox('Length of response',
-                                    ('1-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '81-90', '91+'))
+    context_length = col3.selectbox(
+        'Length of response',
+        ('1-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '81-90', '91+')
+    )
 
 # Input fields
-input = st.text_area('Context', value=context_example)                                    # user inputs context to construct a response (str)
+# user inputs context to construct a response (str)
+input = st.text_area('Context', value=context_example)
 
 if st.button('Submit') or st.session_state.button_sent:
     with st.spinner('Generating a response...'):
