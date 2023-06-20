@@ -1,3 +1,15 @@
+A system that encourages writers to think deeply by asking them questions.
+
+## Flourishing in this project looks like
+
+- Playful experimentation with user interfaces and question generation approaches
+- A shared place where we're running quantitative evaluations (perhaps quick-and-dirty) of different approaches
+- Eagerness to have writers try out this system
+- A draft of a paper coming together (perhaps starting with the formative study writing)
+- A presentation coming together, where we copy and paste examples of cool stuff (and broken stuff)
+
+
+
 ## DAISI (Deep Artificial Intelligence System for Interviews)
 
 ### About
