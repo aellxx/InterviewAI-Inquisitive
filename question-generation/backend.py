@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from transformers import BartTokenizer, BartForConditionalGeneration
+import torch
 
 
 def generate_questions(sequence: str) -> "list[str]":
@@ -18,17 +19,22 @@ def generate_questions(sequence: str) -> "list[str]":
     tokenizer = BartTokenizer.from_pretrained(model_id)
     model = BartForConditionalGeneration.from_pretrained(model_id)
 
-    inputs = tokenizer(sequence, return_tensors="pt")
+    # Make use of CUDA if available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    generated_ids = model.generate(
-        inputs["input_ids"],
-        num_beams=4,
-        max_length=64,
-        min_length=9,
-        num_return_sequences=4,
-        diversity_penalty=1.0,
-        num_beam_groups=4,
-    )
+    inputs = tokenizer(sequence, return_tensors="pt").to(device)
+
+    model.to(device)
+    with torch.no_grad():
+        generated_ids = model.generate(
+            inputs["input_ids"],
+            num_beams=4,
+            max_length=64,
+            min_length=9,
+            num_return_sequences=4,
+            diversity_penalty=1.0,
+            num_beam_groups=4,
+        )
 
     # Decode the generated token IDs and return the result as a list of strings
     return tokenizer.batch_decode(
@@ -40,4 +46,4 @@ if __name__ == "__main__":
     with open("context.txt", "r") as context_txt:
         contexts = context_txt.readlines()
 
-    print(len(generate_questions(contexts[0])))
+    print(generate_questions(contexts[0])[0])
