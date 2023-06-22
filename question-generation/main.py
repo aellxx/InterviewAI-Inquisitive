@@ -11,7 +11,8 @@ app = FastAPI()
 
 @app.get("/generate")
 async def generate_json():
-    data = [{"context": "", "question": ""}]
+    contexts, questions = get_contexts_and_questions("context.txt")
+    data = [{"context": c, "question": q} for c in contexts for q in questions]
     return JSONResponse(content=data)
 
 
