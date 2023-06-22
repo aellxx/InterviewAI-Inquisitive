@@ -2,6 +2,7 @@
 
 from transformers import BartTokenizer, BartForConditionalGeneration
 from pathlib import Path
+import random
 import torch
 
 
@@ -64,6 +65,28 @@ def generate_questions(sequence: str) -> "list[str]":
     )
 
 
+def get_contexts_and_questions(file_name: str) -> "tuple[list, list]":
+    """Retrieve a list of contexts and their corresponding list of generated questions.
+
+    Each context is associated with one randomly selected question.
+    This is a naive and potentially time consuming operation.
+
+    Args:
+        file_name: The name of the text file containing the context sequences.
+
+    Returns:
+        A tuple containing the list of contexts and their corresponding
+        list of generated questions.
+    """
+
+    contexts = load_contexts_from(Path(file_name))
+    questions = [random.choice(generate_questions(c)) for c in contexts]
+
+    return contexts, questions
+
+
 if __name__ == "__main__":
-    c = load_contexts_from(Path("context.txt"))
+    c, q = get_contexts_and_questions("context.txt")
     print(c)
+    print()
+    print(q)
