@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
@@ -17,5 +18,5 @@ async def generate_json():
 
 
 if __name__ == "__main__":
-    # Test server at: https://dev0.kenarnold.org/generate
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    # Test server at: https://dev<X>.kenarnold.org/generate
+    uvicorn.run(app, host="0.0.0.0", port=int(sys.argv[1]))
