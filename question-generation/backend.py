@@ -83,10 +83,3 @@ def get_contexts_and_questions(file_name: str) -> "tuple[list, list]":
     questions = [random.choice(generate_questions(c)) for c in contexts]
 
     return contexts, questions
-
-
-if __name__ == "__main__":
-    c, q = get_contexts_and_questions("context.txt")
-    print(c)
-    print()
-    print(q)
