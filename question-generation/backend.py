@@ -6,27 +6,6 @@ import random
 import torch
 
 
-def load_contexts_from(file_name: Path) -> "list[str]":
-    """Retrieve context sequences from a text file.
-
-    Args:
-        file_name: A path to the text file containing the context sequences.
-          Each line represents a separate sequence.
-
-    Returns:
-        A list of context sequences as strings.
-
-    Raises:
-        FileNotFoundError: file_name does not exist.
-    """
-
-    if file_name.is_file():
-        with open(file_name, "r") as f:
-            return f.readlines()
-    else:
-        raise FileNotFoundError(f"'{file_name.name}' does not exist.")
-
-
 def generate_questions(sequence: str) -> "list[str]":
     """Generate questions based on a given sequence of context.
 
@@ -79,7 +58,7 @@ def get_contexts_and_questions(file_name: str) -> "tuple[list, list]":
         list of generated questions.
     """
 
-    contexts = load_contexts_from(Path(file_name))
+    contexts = Path(file_name).read_text().split("\n")
     questions = [random.choice(generate_questions(c)) for c in contexts]
 
     return contexts, questions
