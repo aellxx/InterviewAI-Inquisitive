@@ -2,6 +2,7 @@
 
 import sys
 import uvicorn
+import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -26,9 +27,11 @@ app.add_middleware(
 
 @app.get("/generate")
 async def generate_json():
-    contexts, questions = get_contexts_and_questions("context.txt")
-    data = [{"context": c, "question": q} for c in contexts for q in questions]
-    return JSONResponse(content=data)
+    return json.loads(open("demo-data.json").read())
+    #contexts, questions = get_contexts_and_questions("context.txt")
+    #data = [{"context": c, "question": q} for c in contexts for q in questions]
+    #data = {"context": "context", "question": "question"}
+    #return dict(content=data)
 
 
 if __name__ == "__main__":
