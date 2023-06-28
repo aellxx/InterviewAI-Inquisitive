@@ -6,7 +6,7 @@ from nlp import get_questions
 
 app = FastAPI()
 
-
+# May risk unauthorized access
 origins = [
     "*",
 ]
