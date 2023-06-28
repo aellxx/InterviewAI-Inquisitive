@@ -12,13 +12,13 @@ def interview_ai(sequence: str) -> "list[str]":
 
     Returns:
         A list of generated questions as strings. The number of questions returned
-        is determined by the num_return_sequences parameter of the model's generate method.
+        is determined by the num_return_sequences parameter.
     """
 
     model_id = "hyechanjun/interview-question-remake"
     pipe = pipeline("text2text-generation", model=model_id)
 
-    return pipe(
+    outputs = pipe(
         sequence,
         max_length=64,
         min_length=9,
@@ -27,3 +27,5 @@ def interview_ai(sequence: str) -> "list[str]":
         diversity_penalty=1.0,
         num_beam_groups=4,
     )
+
+    return [output["generated_text"] for output in outputs]
