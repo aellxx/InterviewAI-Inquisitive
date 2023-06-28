@@ -35,7 +35,11 @@ database: "list[Data]" = []
 async def store_data(data: "list[str]"):
     for d in data:
         if not any(db.paragraph == d for db in database):
-            database.append(Data(paragraph=d, comment=""))
+            database.append(
+                # Generate question when appending
+                # This may be an inefficient approach
+                Data(paragraph=d, comment=get_questions(sequence=d, num_questions=1))
+            )
 
 
 # GET method for retrieving the database
