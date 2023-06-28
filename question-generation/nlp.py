@@ -1,7 +1,5 @@
 from transformers import pipeline
 from pathlib import Path
-import random
-import torch
 
 
 def interview_ai(sequence: str, num_questions: int) -> "list[str]":
@@ -29,3 +27,16 @@ def interview_ai(sequence: str, num_questions: int) -> "list[str]":
     )
 
     return [output["generated_text"] for output in outputs]
+
+
+def get_questions(sequence: str, num_questions: int) -> "list[str]":
+    """Interface for the back-end server.
+
+    Args:
+        sequence: A string representing the context from which to generate questions.
+        num_questions: The number of questions to generate.
+
+    Returns:
+        A list of generated questions as strings.
+    """
+    return interview_ai(sequence, num_questions=1)
