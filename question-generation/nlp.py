@@ -13,7 +13,7 @@ def interview_ai(sequence: str, num_questions: int) -> "list[str]":
     """
 
     model_id = "hyechanjun/interview-question-remake"
-    pipe = pipeline("text2text-generation", model=model_id)
+    pipe = pipeline("text2text-generation", model=model_id, device=0)
 
     outputs = pipe(
         sequence,
