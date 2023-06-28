@@ -30,15 +30,15 @@ class Data(BaseModel):
 database: "list[Data]" = []
 
 
-@app.get("/generate")
-async def generate_json():
-    return json.loads(open("demo-data.json").read())
-    #contexts, questions = get_contexts_and_questions("context.txt")
-    #data = [{"context": c, "question": q} for c in contexts for q in questions]
-    #data = {"context": "context", "question": "question"}
-    #return dict(content=data)
+# POST method for appending new paragraphs to the database
+@app.post("/database")
+async def store_data(data: "list[str]"):
+    for d in data:
+        if not any(db.paragraph == d for db in database):
+            database.append(Data(paragraph=d, comment=""))
 
 
-if __name__ == "__main__":
-    # Test server at: https://dev<X>.kenarnold.org/generate
-    uvicorn.run(app, host="0.0.0.0", port=int(sys.argv[1]))
+# GET method for retrieving the database
+@app.get("/database")
+async def get_data() -> "list[Data]":
+    return database
