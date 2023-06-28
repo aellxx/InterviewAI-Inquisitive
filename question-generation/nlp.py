@@ -6,8 +6,8 @@ import random
 import torch
 
 
-def generate_questions(sequence: str) -> "list[str]":
-    """Generate questions based on a given sequence of context.
+def interview_ai(sequence: str) -> "list[str]":
+    """Generate questions based on a given sequence of context using Interview AI.
 
     Args:
         sequence: A string representing the context from which to generate questions.
