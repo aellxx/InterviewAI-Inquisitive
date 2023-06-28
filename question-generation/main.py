@@ -39,7 +39,7 @@ async def store_data(data: List[str]):
             database.append(
                 # Generate question when appending
                 # This may be an inefficient approach
-                Data(paragraph=d, comment=get_questions(sequence=d, num_questions=1))
+                Data(paragraph=d, comment=get_questions(sequence=d, num_questions=1)[0])
             )
 
 
