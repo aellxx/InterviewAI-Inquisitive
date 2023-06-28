@@ -1,14 +1,25 @@
-# Question Generation
+## Question Generation NLP
 
-Our objective is to retrieve the document from the text editor and generate questions that will be returned to the text editor as comments in the side margin.
+### Project Goals
 
-Currently, our system supports reading context from a text file, simulating document retrieval from a text editor. Subsequently, it generates questions using Interview AI. Both the context and generated questions are saved as a JSON dataset, which can then be utilized by the Word API.
+- Implement NLP pipelines (or inferences) that will be used for question generation:
+    - [Interview AI](https://haramkoo.github.io/InterviewAI/) pre-trained on [BART base](https://huggingface.co/facebook/bart-base) model.
 
-How to run (recommended steps):
+- Pre-train NLP models that will be used for question generation.
 
-1. Launch code tunnel to ds1. Click [here](https://calvincollege-my.sharepoint.com/:v:/g/personal/ka37_calvin_edu/EaCsoG_mivtCja5phKKPt8sBZkYHDEnK1vOtmKj8pEhzcQ) to watch how (skip to half of the video, where Professor Arnold explains ds1).
-2. Git clone this repository.
-4. Create a new conda environment for question-generation, then activate the new conda environment. Here is a [conda cheatsheet](https://docs.conda.io/projects/conda/en/latest/user-guide/cheatsheet.html).
-5. Run `pip install -r requirements.txt`.
-6. Run `python main.py <port>`. Note that `<port>` must be some value 500X, where X is between 0~9. Please choose an available port and then [post your choice here](https://teams.microsoft.com/l/message/19:f39cc2b4462c4aa88de10d429d76c5cd@thread.tacv2/1685988735507?tenantId=756349b9-0610-4b01-917b-2a4ac10df947&groupId=1b002a41-ef6d-460c-986e-d32d230bef4f&parentMessageId=1685988735507&teamName=Arnold%20Lab&channelName=Summer23&createdTime=1685988735507&allowXTenantAccess=false).
-7. Navigate to `https://dev<X>.kenarnold.org/generate`, where `<X>` is the last digit of your port 500X.
+- Implement FastAPI back-end that handles POST and GET requests from a font-end.
+
+### Contribution Guide
+
+In the interest of reproducibility and readability, please consider using [black](https://pypi.org/project/black/) for code formatting and referring to [this section of the guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) for code documentation.
+
+Please keep back-end operations (i.e. FastAPI) separate from NLP methods and vice-versa. 
+
+When necessary, implement interface methods for communicating with the back-end.
+
+### Setup Guide
+
+1. Clone this repository.
+2. Create and activate a new conda environment.
+3. Run `pip install -r requirements.txt`.
+4. Run `uvicorn main:app --host localhost --port <port_number> --reload` with a custom `<port_number>`.
