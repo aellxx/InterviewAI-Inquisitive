@@ -1,5 +1,4 @@
 from transformers import pipeline
-from pathlib import Path
 
 
 def interview_ai(sequence: str, num_questions: int) -> "list[str]":
