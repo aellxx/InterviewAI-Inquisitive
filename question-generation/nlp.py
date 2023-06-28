@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from transformers import BartTokenizer, BartForConditionalGeneration
 from pathlib import Path
 import random
@@ -42,23 +40,3 @@ def interview_ai(sequence: str) -> "list[str]":
     return tokenizer.batch_decode(
         generated_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False
     )
-
-
-def get_contexts_and_questions(file_name: str) -> "tuple[list, list]":
-    """Retrieve a list of contexts and their corresponding list of generated questions.
-
-    Each context is associated with one randomly selected question.
-    This is a naive and potentially time consuming operation.
-
-    Args:
-        file_name: The name of the text file containing the context sequences.
-
-    Returns:
-        A tuple containing the list of contexts and their corresponding
-        list of generated questions.
-    """
-
-    contexts = Path(file_name).read_text().split("\n")
-    questions = [random.choice(generate_questions(c)) for c in contexts]
-
-    return contexts, questions
