@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import List
 
 from nlp import get_questions
 
@@ -27,12 +28,12 @@ class Data(BaseModel):
 
 
 # Memory-based database for now
-database = []
+database: List[Data] = []
 
 
 # POST method for appending new paragraphs to the database
 @app.post("/database")
-async def store_data(data):
+async def store_data(data: List[str]):
     for d in data:
         if not any(db.paragraph == d for db in database):
             database.append(
@@ -44,5 +45,5 @@ async def store_data(data):
 
 # GET method for retrieving the database
 @app.get("/database")
-async def get_data():
+async def get_data() -> List[Data]:
     return database
