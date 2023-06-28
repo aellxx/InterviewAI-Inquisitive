@@ -1,12 +1,8 @@
-#!/usr/bin/env python3
-
-import sys
-import uvicorn
-import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import json
 
-from backend import get_contexts_and_questions
+from nlp import get_questions
 
 app = FastAPI()
 

@@ -38,4 +38,5 @@ def get_questions(sequence: str, num_questions: int) -> "list[str]":
     Returns:
         A list of generated questions as strings.
     """
+    
     return interview_ai(sequence, num_questions=1)
