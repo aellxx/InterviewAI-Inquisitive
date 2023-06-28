@@ -27,12 +27,12 @@ class Data(BaseModel):
 
 
 # Memory-based database for now
-database: "list[Data]" = []
+database = []
 
 
 # POST method for appending new paragraphs to the database
 @app.post("/database")
-async def store_data(data: "list[str]"):
+async def store_data(data):
     for d in data:
         if not any(db.paragraph == d for db in database):
             database.append(
@@ -44,5 +44,5 @@ async def store_data(data: "list[str]"):
 
 # GET method for retrieving the database
 @app.get("/database")
-async def get_data() -> "list[Data]":
+async def get_data():
     return database
