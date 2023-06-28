@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import json
+from pydantic import BaseModel
 
 from nlp import get_questions
 
@@ -19,6 +19,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# JSON-like object
+class Data(BaseModel):
+    paragraph: str
+    comment: str
 
 
 @app.get("/generate")
