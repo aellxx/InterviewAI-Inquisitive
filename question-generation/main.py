@@ -26,6 +26,10 @@ class Data(BaseModel):
     comment: str
 
 
+# Memory-based database for now
+database: "list[Data]" = []
+
+
 @app.get("/generate")
 async def generate_json():
     return json.loads(open("demo-data.json").read())
