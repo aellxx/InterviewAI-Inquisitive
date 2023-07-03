@@ -10,16 +10,36 @@ Office.onReady((info) => {
 
 async function getComments() {
   await Word.run(async (context) => {
-    // Get comments from the Word document
     const comments = context.document.body.getComments();
     comments.load("items");
     await context.sync();
-
-    // Store them as an array
-    const commentItems = comments.items;
-
-    console.log(commentItems[0]);
+    return comments;
   });
+}
+
+async function main() {
+    // Get comments from the Word document
+    // const comments = context.document.body.getComments();
+    // comments.load("items");
+    // await context.sync();
+
+    // // Store them as an array
+    // const commentItems = comments.items;
+
+    // const range = commentItems[0].getRange();
+    // range.load("text");
+    // await context.sync();
+
+    // console.log(range.text);
+    // console.log("Comment: " + commentItems[0].content);
+
+    // const commentItemReplies = commentItems[3].replies;
+    // commentItemReplies.load("items");
+    // await context.sync();
+
+    // const commentItemReplyItems = commentItemReplies.items;
+
+    // console.log(commentItemReplyItems);
 }
 
 export async function tryCatch(callback) {
