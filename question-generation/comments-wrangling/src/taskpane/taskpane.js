@@ -13,9 +13,11 @@ async function getComments() {
     const comments = context.document.body.getComments();
     comments.load("items");
     await context.sync();
-    return comments;
+    return comments.items;
   });
 }
+
+async function get
 
 async function main() {
     // Get comments from the Word document
