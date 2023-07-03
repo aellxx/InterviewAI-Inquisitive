@@ -17,9 +17,20 @@ async function getComments() {
   });
 }
 
-async function get
+async function getReplies(comment) {
+  await Word.run(async (context) => {
+    const replies = comment.replies;
+    replies.load("items");
+    await context.sync();
+    return replies.items;
+  });
+}
 
 async function main() {
+  const comments = getComments();
+
+
+
     // Get comments from the Word document
     // const comments = context.document.body.getComments();
     // comments.load("items");
