@@ -26,33 +26,17 @@ async function getReplies(comment) {
   });
 }
 
+async function getContext(comment) {
+  await Word.run(async (context) => {
+    const commentContext = comment.getRange();
+    commentContext.load("text");
+    await context.sync();
+    return commentContext.text;
+  });
+}
+
 async function main() {
   const comments = getComments();
-
-
-
-    // Get comments from the Word document
-    // const comments = context.document.body.getComments();
-    // comments.load("items");
-    // await context.sync();
-
-    // // Store them as an array
-    // const commentItems = comments.items;
-
-    // const range = commentItems[0].getRange();
-    // range.load("text");
-    // await context.sync();
-
-    // console.log(range.text);
-    // console.log("Comment: " + commentItems[0].content);
-
-    // const commentItemReplies = commentItems[3].replies;
-    // commentItemReplies.load("items");
-    // await context.sync();
-
-    // const commentItemReplyItems = commentItemReplies.items;
-
-    // console.log(commentItemReplyItems);
 }
 
 export async function tryCatch(callback) {
