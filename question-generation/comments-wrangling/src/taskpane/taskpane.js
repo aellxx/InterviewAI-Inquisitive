@@ -60,9 +60,11 @@ async function main() {
       if (replies[i].length > 0) {
         comments.push(...replies[i]);
       }
+      // TODO: Add document name to the data?
       data.push({ context: contexts[i], comments: comments });
     }
 
+    // TODO: Edit for production URL
     const url = "https://dev0.kenarnold.org/data";
     post(url, data);
   });
