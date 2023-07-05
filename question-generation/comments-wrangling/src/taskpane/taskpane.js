@@ -22,6 +22,20 @@ async function getCommentReplies(commentCollection) {
   return replyCollections.map((reply) => reply.items.map((item) => item.content));
 }
 
+async function post(url, data) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("HTTP request failed with status " + response.status);
+  }
+}
+
 export async function tryCatch(callback) {
   try {
     await callback();
@@ -49,6 +63,7 @@ async function main() {
       data.push({ context: contexts[i], comments: comments });
     }
 
-    console.log(data);
+    const url = "https://dev0.kenarnold.org/data";
+    post(url, data);
   });
 }
