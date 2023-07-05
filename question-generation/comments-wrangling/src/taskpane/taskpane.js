@@ -39,6 +39,16 @@ async function main() {
     const contexts = await getCommentContexts(commentCollection);
     const replies = await getCommentReplies(commentCollection);
 
-    console.log(contexts);
+    const data = [];
+
+    for (let i = 0; i < commentCollection.items.length; i++) {
+      const comments = [commentCollection.items[i].content];
+      if (replies[i].length > 0) {
+        comments.push(...replies[i]);
+      }
+      data.push({ context: contexts[i], comments: comments });
+    }
+
+    console.log(data);
   });
 }
