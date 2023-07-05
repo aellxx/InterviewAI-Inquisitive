@@ -8,23 +8,11 @@ Office.onReady((info) => {
   }
 });
 
-async function getCommentContexts(context, commentCollection) {
+async function getCommentContexts(commentCollection) {
   const commentArray = commentCollection.items;
-  let commentRanges = [];
-  let contexts = [];
-
-  for (let i = 0; i < commentArray.length; i++) {
-    commentRanges.push(commentArray[i].getRange());
-    commentRanges[i].load("text");
-  }
-
-  await context.sync();
-
-  for (let i = 0; i < commentRanges.length; i++) {
-    contexts.push(commentRanges[i].text);
-  }
-
-  return contexts;
+  const commentRanges = commentArray.map((comment) => comment.getRange().load("text"));
+  await commentCollection.context.sync();
+  return commentRanges.map((range) => range.text);
 }
 
 async function getCommentReplies(commentCollection) {
@@ -40,9 +28,10 @@ async function main() {
     commentCollection.load("items");
     await context.sync();
 
+    const contexts = await getCommentContexts(commentCollection);
     const replies = await getCommentReplies(commentCollection);
 
-    console.log(replies);
+    console.log(contexts);
   });
 }
 
