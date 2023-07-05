@@ -22,6 +22,14 @@ async function getCommentReplies(commentCollection) {
   return replyCollections.map((reply) => reply.items.map((item) => item.content));
 }
 
+export async function tryCatch(callback) {
+  try {
+    await callback();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 async function main() {
   await Word.run(async (context) => {
     const commentCollection = context.document.body.getComments();
@@ -33,12 +41,4 @@ async function main() {
 
     console.log(contexts);
   });
-}
-
-export async function tryCatch(callback) {
-  try {
-    await callback();
-  } catch (error) {
-    console.error(error);
-  }
 }
