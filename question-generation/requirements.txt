@@ -2,3 +2,7 @@ torch
 transformers
 fastapi
 uvicorn
+
+# for openai approach
+openai
+python-dotenv
