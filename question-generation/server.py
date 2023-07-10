@@ -60,7 +60,7 @@ async def get_reflections_chat(request: ReflectionRequestPayload) -> ReflectionR
         result = c.fetchone()
         
         if result:
-            return result[3]
+            return ReflectionResponsePayload(response=result[3])
 
     # else, make the request and cache the response
     response = openai.ChatCompletion.create(
