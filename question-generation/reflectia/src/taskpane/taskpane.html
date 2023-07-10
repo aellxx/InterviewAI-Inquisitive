@@ -21,8 +21,10 @@
     <section id="sideload-msg" class="ms-welcome__main">
         <h2 class="ms-font-xl">Please <a target="_blank" href="https://learn.microsoft.com/office/dev/add-ins/testing/test-debug-office-add-ins#sideload-an-office-add-in-for-testing">sideload</a> your add-in to see app body.</h2>
     </section>
-    <main id="app-body" class="ms-welcome__main" style="display: none;">
-        <button class="ms-Button" id="run">Run</button><br/><br/>
+
+    <main id="app-body" class="ms-welcome__main" style="display: none">
+        <button class="ms-Button" id="run">Run</button><br /><br />
+        <textarea id="prompt" type="text" placeholder="Prompt">Using only the text from the user, what are 3 of the most important concepts in this paragraph? Respond as a bulleted list of 2 or 3 words.</textarea>
     </main>
 
     <div id="card-container"></div>

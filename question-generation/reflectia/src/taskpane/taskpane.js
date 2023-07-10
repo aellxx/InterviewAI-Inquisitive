@@ -11,18 +11,6 @@ Office.onReady((info) => {
   }
 });
 
-async function post(url, data) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) throw new Error("HTTP request failed with status " + response.status);
-}
-
 export async function tryCatch(callback) {
   try {
     await callback();
@@ -40,10 +28,9 @@ function createParagraph(card, text) {
 }
 
 // Function to create a new card element
-function createCard(index, text) {
+function createCard(text) {
   const card = document.createElement("div");
 
-  card.id = index;
   card.className = "card";
   createParagraph(card, text);
 
@@ -69,14 +56,13 @@ async function getReflections(paragraph, prompt) {
   return res.response;
 }
 
-async function getCurrentParagraph() {
-  return Word.run(async (context) => {
-    let selectedParagraph = context.document.getSelection().paragraphs;
-    context.load(selectedParagraph);
-    await context.sync();
+async function getCurrentParagraph(context) {
+  let selectedParagraphs = context.document.getSelection().paragraphs;
+  context.load(selectedParagraphs);
+  await context.sync();
 
-    return selectedParagraph.items[0];
-  });
+  // A selection can span multiple paragraphs, but we only want the first one
+  return selectedParagraphs.items[0];
 }
 
 async function detectParagraphChange() {
@@ -105,8 +91,12 @@ function delay(ms) {
 
 async function main() {
   await Word.run(async (context) => {
+    let prompt = document.getElementById('prompt').value;
+
+    if(prompt.length === 0)
+      prompt = "Using only the text from the user, what are 3 of the most important concepts in this paragraph?";
+
     // FIXME: Get the prompt from the user.
-    const prompt = "3 most important concepts in very short phrases";
 
     const paragraphs = context.document.body.paragraphs;
 
@@ -114,18 +104,15 @@ async function main() {
     await context.sync();
 
     let cardContainer = document.getElementById("card-container");
-    cardContainer.innerHTML = "";
+    cardContainer.innerHTML = "Loading...";
     let cardsFragment = document.createDocumentFragment();
 
-    for (let i = 0; i < paragraphs.items.length; i++) {
-      // Get the desired reflections for this paragraph
-      const reflections = await getReflections(paragraphs.items[i].text, prompt);
+    // Get the desired reflections for the current paragraph
+    const currentParagraph = await getCurrentParagraph(context);
+    const reflections = await getReflections(currentParagraph.text, prompt);
 
-      const card = createCard(i, reflections);
-      cardsFragment.appendChild(card);
-
-      break;
-    }
+    const card = createCard(reflections);
+    cardsFragment.appendChild(card);
 
     cardContainer.appendChild(cardsFragment);
   });
