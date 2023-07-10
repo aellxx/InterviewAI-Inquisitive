@@ -1,3 +1,5 @@
 .vscode
 .DS_Store
 question-generation/.DS_Store
+.env
+question-generation/server.py
