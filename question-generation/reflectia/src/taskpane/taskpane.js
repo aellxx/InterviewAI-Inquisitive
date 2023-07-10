@@ -2,12 +2,51 @@
 
 const SERVER_URL = "http://localhost:8000";
 
+let presetPrompts = [
+  {
+    name: "Summary: phrases",
+    prompt: "What are 3 of the most important concepts described by this paragraph? Respond as a bulleted list of 2 or 3 words."
+  },
+  {
+    name: "Summary: sentences",
+    prompt: "What are 3 of the most important concepts described by this paragraph? Respond as a bulleted list of 2 or 3 sentences."
+  },
+  {
+    name: "Summary: questions",
+    // TODO: Improve this prompt
+    prompt: "List 2 or 3 questions that the writer was attempting to answer in this paragraph."
+  },
+  {
+    name: "Reactions: questions",
+    prompt: "As a reader, ask the writer 2 or 3 questions about definitions, logical connections, or some needed background information."
+  }
+]
+
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
     document.querySelector(".ms-welcome__header").style.display = "none";
     document.getElementById("run").onclick = () => tryCatch(main);
+    // make a radio button for each preset prompt
+    let presetPromptsContainer = document.getElementById("preset-prompts");
+    presetPrompts.forEach((presetPrompt) => {
+      let radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "prompt";
+      radio.value = presetPrompt.prompt;
+      radio.id = presetPrompt.name;
+      radio.onclick = () => {
+        document.getElementById("prompt").value = presetPrompt.prompt;
+      }
+      let label = document.createElement("label");
+      label.style.
+      label.textContent = presetPrompt.name;
+      label.insertBefore(radio, label.firstChild);
+      presetPromptsContainer.appendChild(label);
+    }
+  )
+    
   }
 });
 
