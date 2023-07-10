@@ -40,7 +40,7 @@ Office.onReady((info) => {
         document.getElementById("prompt").value = presetPrompt.prompt;
       }
       let label = document.createElement("label");
-      label.style.
+      label.style.display = "block";
       label.textContent = presetPrompt.name;
       label.insertBefore(radio, label.firstChild);
       presetPromptsContainer.appendChild(label);
@@ -149,10 +149,12 @@ async function main() {
     // Get the desired reflections for the current paragraph
     const currentParagraph = await getCurrentParagraph(context);
     const reflections = await getReflections(currentParagraph.text, prompt);
+    cardContainer.innerHTML = "";
 
     const card = createCard(reflections);
     cardsFragment.appendChild(card);
 
     cardContainer.appendChild(cardsFragment);
+    
   });
 }
