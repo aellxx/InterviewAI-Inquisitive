@@ -3,3 +3,4 @@
 question-generation/.DS_Store
 .env
 question-generation/server.py
+requests.db
