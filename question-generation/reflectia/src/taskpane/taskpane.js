@@ -19,6 +19,10 @@ let presetPrompts = [
   {
     name: "Reactions: questions",
     prompt: "As a reader, ask the writer 2 or 3 questions about definitions, logical connections, or some needed background information."
+  },
+  {
+    name: "Metaphors",
+    prompt: "List the metaphors that the writer uses in this paragraph. Respond in the form of {item 1} is like {item 2}."
   }
 ]
 
