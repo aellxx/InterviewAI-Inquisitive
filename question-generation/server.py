@@ -13,6 +13,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import json
 
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_random_exponential,
+)  # for exponential backoff
+ 
 from typing import List
 
 nest_asyncio.apply()
@@ -66,7 +72,10 @@ with sqlite3.connect(db_file) as conn:
 def sanitize(text):
     return text.replace('"', '').replace("'", "")
 
-
+async_chat_with_backoff = (
+    retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
+    (openai.ChatCompletion.acreate)
+)
 
 async def get_reflections_chat(
     request: ReflectionRequestPayload,
