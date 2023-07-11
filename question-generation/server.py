@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 nest_asyncio.apply()
 
-# read env file
+# Read env file
 with open(".env", "r") as f:
     for line in f:
         key, value = line.split("=")
@@ -46,9 +46,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# define a table for requests that have been made. Include timestamp, payload, and response
+# Establish a connection to the database file
 with sqlite3.connect("requests.db") as conn:
     c = conn.cursor()
+
+    # Create a table named "requests" if it doesn't already exist
+    # The table has four columns: timestamp, prompt, paragraph, and response
     c.execute(
         "CREATE TABLE IF NOT EXISTS requests (timestamp, prompt, paragraph, response)"
     )
@@ -57,7 +60,7 @@ with sqlite3.connect("requests.db") as conn:
 async def get_reflections_chat(
     request: ReflectionRequestPayload,
 ) -> ReflectionResponsePayload:
-    # check if this request has been made before
+    # Check if this request has been made before
     with sqlite3.connect("requests.db") as conn:
         c = conn.cursor()
         c.execute(
@@ -69,7 +72,7 @@ async def get_reflections_chat(
         if result:
             return ReflectionResponsePayload(response=result[3])
 
-    # else, make the request and cache the response
+    # Else, make the request and cache the response
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -83,13 +86,13 @@ async def get_reflections_chat(
         presence_penalty=0,
     )
 
-    # extract the response
+    # Extract the response
     response_text = response["choices"][0]["message"]["content"]
 
-    # cache the response
+    # Cache the response
     with sqlite3.connect("requests.db") as conn:
         c = conn.cursor()
-        # use SQL timestamp
+        # Use SQL timestamp
         c.execute(
             'INSERT INTO requests VALUES (datetime("now"), ?, ?, ?)',
             (request.prompt, request.paragraph, response_text),
