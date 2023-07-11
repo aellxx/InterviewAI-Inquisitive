@@ -5,26 +5,30 @@ const SERVER_URL = "http://localhost:8000";
 let presetPrompts = [
   {
     name: "Summary: phrases",
-    prompt: "What are 3 of the most important concepts described by this paragraph? Respond as a bulleted list of 2 or 3 words."
+    prompt:
+      "What are 3 of the most important concepts described by this paragraph? Respond as a bulleted list of 2 or 3 words.",
   },
   {
     name: "Summary: sentences",
-    prompt: "What are 3 of the most important concepts described by this paragraph? Respond as a bulleted list of 2 or 3 sentences."
+    prompt:
+      "What are 3 of the most important concepts described by this paragraph? Respond as a bulleted list of 2 or 3 sentences.",
   },
   {
     name: "Summary: questions",
     // TODO: Improve this prompt
-    prompt: "List 2 or 3 questions that the writer was attempting to answer in this paragraph."
+    prompt: "List 2 or 3 questions that the writer was attempting to answer in this paragraph.",
   },
   {
     name: "Reactions: questions",
-    prompt: "As a reader, ask the writer 2 or 3 questions about definitions, logical connections, or some needed background information."
+    prompt:
+      "As a reader, ask the writer 2 or 3 questions about definitions, logical connections, or some needed background information.",
   },
   {
     name: "Metaphors",
-    prompt: "List the metaphors that the writer uses in this paragraph. Respond in the form of {item 1} is like {item 2}."
-  }
-]
+    prompt:
+      "List the metaphors that the writer uses in this paragraph. Respond in the form of {item 1} is like {item 2}.",
+  },
+];
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
@@ -42,15 +46,13 @@ Office.onReady((info) => {
       radio.id = presetPrompt.name;
       radio.onclick = () => {
         document.getElementById("prompt").value = presetPrompt.prompt;
-      }
+      };
       let label = document.createElement("label");
       label.style.display = "block";
       label.textContent = presetPrompt.name;
       label.insertBefore(radio, label.firstChild);
       presetPromptsContainer.appendChild(label);
-    }
-  )
-    
+    });
   }
 });
 
@@ -63,29 +65,65 @@ export async function tryCatch(callback) {
 }
 
 // Function to create a new paragraph element as a child of a card
-function createParagraph(card, text) {
-  const paragraph = document.createElement("p");
+function createParagraph(card, paragraph) {
+  const paragraphOnCard = document.createElement("p");
 
-  paragraph.textContent = text;
-  card.appendChild(paragraph);
+  paragraphOnCard.textContent = paragraph;
+  card.appendChild(paragraphOnCard);
 }
 
 // Function to create a new card element
-function createCard(text) {
+// Pass in the index of the paragraph and the paragraph object
+function createCard(index, paragraph) {
   const card = document.createElement("div");
 
   card.className = "card";
-  createParagraph(card, text);
+  card.id = index;
+  card.onmouseover = onMouseOverEvent;
+  card.onmouseleave = onMouseLeaveEvent;
 
+  createParagraph(card, paragraph);
   return card;
+}
+
+// Define the event handler for onmouseover
+async function onMouseOverEvent(event) {
+  changeParagraphHighlightColor(this.id, "highlight");
+}
+
+// Define the event handler for onmouseleave
+async function onMouseLeaveEvent(event) {
+  changeParagraphHighlightColor(this.id, "dehighlight");
+}
+
+// Change the highlight color of the selected paragraph
+async function changeParagraphHighlightColor(paragraphId, operation) {
+  await Word.run(async (context) => {
+    // Load the document as a ParagraphCollection
+    const paragraphs = context.document.body.paragraphs;
+    paragraphs.load();
+    await context.sync();
+
+    // Highlight or dehighlight the paragraph
+    const target = paragraphs.items[paragraphId];
+    target.load("font");
+    await context.sync();
+
+    if (operation == "highlight") {
+      target.font.highlightColor = "#FFFF00";
+    } else if (operation == "dehighlight") {
+      target.font.highlightColor = "#FFFFFF";
+    }
+  });
 }
 
 async function getReflections(paragraph, prompt) {
   const data = {
-    paragraph, prompt
+    paragraph,
+    prompt,
   };
 
-  const req = await fetch(`${ SERVER_URL }/reflections`, {
+  const req = await fetch(`${SERVER_URL}/reflections`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -115,7 +153,7 @@ async function detectParagraphChange() {
     let currentParagraph = await getCurrentParagraph();
     if (initialParagraph.text != currentParagraph.text) {
       try {
-        console.log("paragraph changed")
+        console.log("paragraph changed");
       } catch (error) {
         console.log(error);
       }
@@ -134,9 +172,9 @@ function delay(ms) {
 
 async function main() {
   await Word.run(async (context) => {
-    let prompt = document.getElementById('prompt').value;
+    let prompt = document.getElementById("prompt").value;
 
-    if(prompt.length === 0)
+    if (prompt.length === 0)
       prompt = "Using only the text from the user, what are 3 of the most important concepts in this paragraph?";
 
     // FIXME: Get the prompt from the user.
@@ -150,15 +188,20 @@ async function main() {
     cardContainer.innerHTML = "Loading...";
     let cardsFragment = document.createDocumentFragment();
 
-    // Get the desired reflections for the current paragraph
-    const currentParagraph = await getCurrentParagraph(context);
-    const reflections = await getReflections(currentParagraph.text, prompt);
+    const allReflections = await Promise.all(
+      paragraphs.items.map((paragraph) => getReflections(paragraph.text, prompt))
+    );
+
+    // clear the loading message
     cardContainer.innerHTML = "";
-
-    const card = createCard(reflections);
-    cardsFragment.appendChild(card);
-
-    cardContainer.appendChild(cardsFragment);
     
+    // Create a card for each paragraph
+    for (let i = 0; i < paragraphs.items.length; i++) {
+      const paragraph = paragraphs.items[i];
+      const reflections = allReflections[i];
+      const card = createCard(i, reflections);
+      cardsFragment.appendChild(card);
+    }
+    cardContainer.appendChild(cardsFragment);
   });
 }
