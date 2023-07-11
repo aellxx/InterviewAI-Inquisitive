@@ -46,12 +46,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Establish a connection to the database file
-with sqlite3.connect("requests.db") as conn:
-    c = conn.cursor()
+db_file = "requests.db"
 
-    # Create a table named "requests" if it doesn't already exist
-    # The table has four columns: timestamp, prompt, paragraph, and response
+with sqlite3.connect(db_file) as conn:
+    c = conn.cursor()
     c.execute(
         "CREATE TABLE IF NOT EXISTS requests (timestamp, prompt, paragraph, response)"
     )
@@ -61,7 +59,7 @@ async def get_reflections_chat(
     request: ReflectionRequestPayload,
 ) -> ReflectionResponsePayload:
     # Check if this request has been made before
-    with sqlite3.connect("requests.db") as conn:
+    with sqlite3.connect(db_file) as conn:
         c = conn.cursor()
         c.execute(
             "SELECT * FROM requests WHERE prompt=? AND paragraph=?",
@@ -90,7 +88,7 @@ async def get_reflections_chat(
     response_text = response["choices"][0]["message"]["content"]
 
     # Cache the response
-    with sqlite3.connect("requests.db") as conn:
+    with sqlite3.connect(db_file) as conn:
         c = conn.cursor()
         # Use SQL timestamp
         c.execute(
