@@ -6,12 +6,12 @@ let presetPrompts = [
   {
     name: "Summary: phrases",
     prompt:
-      "What are 3 of the most important concepts described by this paragraph? Respond as a bulleted list of 2 or 3 words.",
+      "What are 3 of the most important concepts described by this paragraph? Each concept should be described in 2 or 3 words.",
   },
   {
     name: "Summary: sentences",
     prompt:
-      "What are 3 of the most important concepts described by this paragraph? Respond as a bulleted list of 2 or 3 sentences.",
+      "What are 3 of the most important concepts described by this paragraph? Each concept should be described in a sentence.",
   },
   {
     name: "Summary: questions",
@@ -26,7 +26,7 @@ let presetPrompts = [
   {
     name: "Metaphors",
     prompt:
-      "List the metaphors that the writer uses in this paragraph. Respond in the form of {item 1} is like {item 2}.",
+      "List the metaphors that the writer uses in this paragraph.",
   },
 ];
 
@@ -66,7 +66,7 @@ export async function tryCatch(callback) {
 
 // Function to create a new paragraph element as a child of a card
 function createParagraph(card, paragraph) {
-  const paragraphOnCard = document.createElement("p");
+  const paragraphOnCard = document.createElement("div");
 
   paragraphOnCard.textContent = paragraph;
   card.appendChild(paragraphOnCard);
@@ -79,7 +79,7 @@ function createCard(index, paragraph) {
 
   card.className = "card";
   card.id = index;
-  card.onmouseover = onMouseOverEvent;
+  card.onmouseenter = onMouseEnterEvent;
   card.onmouseleave = onMouseLeaveEvent;
 
   createParagraph(card, paragraph);
@@ -87,7 +87,7 @@ function createCard(index, paragraph) {
 }
 
 // Define the event handler for onmouseover
-async function onMouseOverEvent(event) {
+async function onMouseEnterEvent(event) {
   changeParagraphHighlightColor(this.id, "highlight");
 }
 
@@ -132,9 +132,10 @@ async function getReflections(paragraph, prompt) {
   });
 
   const res = await req.json();
-  console.log(res);
 
-  return res.response;
+  if(res.error) alert(res);
+  
+  return res.reflections;
 }
 
 async function getCurrentParagraph(context) {
@@ -196,11 +197,16 @@ async function main() {
     cardContainer.innerHTML = "";
     
     // Create a card for each paragraph
+    console.log(allReflections);
     for (let i = 0; i < paragraphs.items.length; i++) {
       const paragraph = paragraphs.items[i];
       const reflections = allReflections[i];
-      const card = createCard(i, reflections);
-      cardsFragment.appendChild(card);
+      // Create a card for each reflection returned
+      for (let j = 0; j < reflections.length; j++) {
+        const reflection = reflections[j];
+        const card = createCard(i, reflection.text_in_HTML_format);
+        cardsFragment.appendChild(card);
+      }
     }
     cardContainer.appendChild(cardsFragment);
   });
