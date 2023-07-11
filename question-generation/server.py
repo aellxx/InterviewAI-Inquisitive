@@ -3,7 +3,6 @@ import os
 import sqlite3
 from typing import List
 
-import nest_asyncio
 import openai
 import uvicorn
 from fastapi import FastAPI
@@ -11,8 +10,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from tenacity import (retry, stop_after_attempt,  # for exponential backoff
                       wait_random_exponential)
-
-nest_asyncio.apply()
 
 # Read env file
 with open(".env", "r") as f:
