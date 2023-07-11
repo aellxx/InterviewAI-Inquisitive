@@ -63,6 +63,10 @@ with sqlite3.connect(db_file) as conn:
         "CREATE TABLE IF NOT EXISTS requests (timestamp, prompt, paragraph, response, success)"
     )
 
+def sanitize(text):
+    return text.replace('"', '').replace("'", "")
+
+
 
 async def get_reflections_chat(
     request: ReflectionRequestPayload,
@@ -81,7 +85,7 @@ async def get_reflections_chat(
             response = json.loads(response_json)
             # assume that the database stores only valid responses in the correct schema.
             # We check this below.
-            return ReflectionResponses(reflections=[ReflectionResponseItem(**item) for item in response])
+            return ReflectionResponses(**response)
 
     # Else, make the request and cache the response
 
@@ -106,7 +110,7 @@ Respond as a JSON array. Each item should have the following schema:
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": prompt},
-            {"role": "user", "content": request.paragraph},
+            {"role": "user", "content": sanitize(request.paragraph)},
         ],
         temperature=1,
         max_tokens=1024,
@@ -122,7 +126,7 @@ Respond as a JSON array. Each item should have the following schema:
     try:
         response_json = json.loads(response_text)
         assert isinstance(response_json, list)
-        reflection_items = ReflectionResponses(reflections=[ReflectionResponseItem(**item) for item in response_json])
+        reflection_items = ReflectionResponses(**json.loads(response_json))
     except Exception as e1:
         # Ask the LM to fix the JSON.
         response = await openai.ChatCompletion.acreate(
@@ -144,7 +148,7 @@ Respond as a JSON array. Each item should have the following schema:
         try:
             response_json = json.loads(new_response)
             assert isinstance(response_json, list)
-            reflection_items = ReflectionResponses(reflections=[ReflectionResponseItem(**item) for item in response_json])
+            reflection_items = ReflectionResponses(**json.loads(response_json))
         except Exception as e2:
             # If it still doesn't work, log the error and fail out
             with sqlite3.connect(db_file) as conn:
