@@ -100,20 +100,28 @@ async def get_reflections_chat(
 
     # TODO: improve the "quality" mechanism
     desired_schema_prompt = '''
-    {
-            "text_in_HTML_format": str,
-            "sentence_number_in_paragraph": int,
-            "quality": float
-    }
-    '''
+interface Response {
+    text_in_HTML_format: string;
+    sentence_number_in_paragraph: number;
+    quality: float between 0 and 1
+}
 
-    prompt = request.prompt + '''
-Respond as a JSON array. Each item should have the following schema:
-''' + desired_schema_prompt
+interface Responses {
+  reflections: Response[];
+}
+'''
 
+    prompt = """
+You will write Responses to the following prompt. JSON schema:
 
-    # TODO: Rate limit these requests.
-    response = await openai.ChatCompletion.acreate(
+""" + desired_schema_prompt + """
+
+Prompt:
+
+> """ + request.prompt
+    
+
+    response = await async_chat_with_backoff(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": prompt},
@@ -131,9 +139,9 @@ Respond as a JSON array. Each item should have the following schema:
 
     # Attempt to parse JSON
     try:
+        print(response_text)
         response_json = json.loads(response_text)
-        assert isinstance(response_json, list)
-        reflection_items = ReflectionResponses(**json.loads(response_json))
+        reflection_items = ReflectionResponses(**response_json)
     except Exception as e1:
         # Ask the LM to fix the JSON.
         response = await openai.ChatCompletion.acreate(
@@ -154,8 +162,7 @@ Respond as a JSON array. Each item should have the following schema:
         # Try to parse again
         try:
             response_json = json.loads(new_response)
-            assert isinstance(response_json, list)
-            reflection_items = ReflectionResponses(**json.loads(response_json))
+            reflection_items = ReflectionResponses(**response_json)
         except Exception as e2:
             # If it still doesn't work, log the error and fail out
             with sqlite3.connect(db_file) as conn:
