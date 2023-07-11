@@ -11,6 +11,10 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import json
+
+from typing import List
+
 nest_asyncio.apply()
 
 # Read env file
@@ -28,8 +32,13 @@ class ReflectionRequestPayload(BaseModel):
     prompt: str
 
 
-class ReflectionResponsePayload(BaseModel):
-    response: str
+class ReflectionResponseItem(BaseModel):
+    text_in_HTML_format: str
+    sentence_number_in_paragraph: int
+    quality: float
+
+class ReflectionResponses(BaseModel):
+    reflections: List[ReflectionResponseItem]
 
 
 app = FastAPI()
@@ -51,30 +60,52 @@ db_file = "requests.db"
 with sqlite3.connect(db_file) as conn:
     c = conn.cursor()
     c.execute(
-        "CREATE TABLE IF NOT EXISTS requests (timestamp, prompt, paragraph, response)"
+        "CREATE TABLE IF NOT EXISTS requests (timestamp, prompt, paragraph, response, success)"
     )
 
 
 async def get_reflections_chat(
     request: ReflectionRequestPayload,
-) -> ReflectionResponsePayload:
+) -> ReflectionResponses:
     # Check if this request has been made before
     with sqlite3.connect(db_file) as conn:
         c = conn.cursor()
         c.execute(
-            "SELECT * FROM requests WHERE prompt=? AND paragraph=?",
+            "SELECT response FROM requests WHERE prompt=? AND paragraph=? AND success='true'",
             (request.prompt, request.paragraph),
         )
         result = c.fetchone()
 
         if result:
-            return ReflectionResponsePayload(response=result[3])
+            response_json = result[0]
+            response = json.loads(response_json)
+            # assume that the database stores only valid responses in the correct schema.
+            # We check this below.
+            return ReflectionResponses(reflections=[ReflectionResponseItem(**item) for item in response])
 
     # Else, make the request and cache the response
-    response = openai.ChatCompletion.create(
+
+    # TODO: improve the "quality" mechanism
+    desired_schema_prompt = '''
+    {
+            "text_in_HTML_format": str,
+            "sentence_number_in_paragraph": int,
+            "quality": float
+    }
+    '''
+
+    stripped_prompt = request.prompt.replace('"', '')
+
+    prompt = stripped_prompt + '''
+Respond as a JSON array. Each item should have the following schema:
+''' + desired_schema_prompt
+
+
+    # TODO: Rate limit these requests.
+    response = await openai.ChatCompletion.acreate(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": request.prompt},
+            {"role": "system", "content": prompt},
             {"role": "user", "content": request.paragraph},
         ],
         temperature=1,
@@ -87,16 +118,57 @@ async def get_reflections_chat(
     # Extract the response
     response_text = response["choices"][0]["message"]["content"]
 
+    # Attempt to parse JSON
+    try:
+        response_json = json.loads(response_text)
+        assert isinstance(response_json, list)
+        reflection_items = ReflectionResponses(reflections=[ReflectionResponseItem(**item) for item in response_json])
+    except Exception as e1:
+        # Ask the LM to fix the JSON.
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "The JSON should be an array of items with the following schema:\n\n" + desired_schema_prompt},
+                {"role": "user", "content": response_text},
+            ],
+            temperature=.5,
+            max_tokens=1024,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0,
+        )
+
+        new_response = response["choices"][0]["message"]["content"]
+
+        # Try to parse again
+        try:
+            response_json = json.loads(new_response)
+            assert isinstance(response_json, list)
+            reflection_items = ReflectionResponses(reflections=[ReflectionResponseItem(**item) for item in response_json])
+        except Exception as e2:
+            # If it still doesn't work, log the error and fail out
+            with sqlite3.connect(db_file) as conn:
+                c = conn.cursor()
+                # Use SQL timestamp
+                c.execute(
+                    'INSERT INTO requests VALUES (datetime("now"), ?, ?, ?, ?)',
+                    (request.prompt, request.paragraph, json.dumps(dict(
+                        error=str(e2), 
+                        response=response_text
+                    )), "false"),
+                )
+            raise e2
+
     # Cache the response
     with sqlite3.connect(db_file) as conn:
         c = conn.cursor()
         # Use SQL timestamp
         c.execute(
-            'INSERT INTO requests VALUES (datetime("now"), ?, ?, ?)',
-            (request.prompt, request.paragraph, response_text),
+            'INSERT INTO requests VALUES (datetime("now"), ?, ?, ?, ?)',
+            (request.prompt, request.paragraph, json.dumps(reflection_items.dict()), "true"),
         )
 
-    return ReflectionResponsePayload(response=response_text)
+    return reflection_items
 
 
 @app.post("/reflections")
@@ -150,6 +222,5 @@ async def logs():
         result = c.fetchall()
 
     return result
-
 
 uvicorn.run(app, port=8000)
