@@ -1,25 +1,16 @@
+import json
 import os
-
 import sqlite3
-from pydantic import BaseModel
-
-import openai
+from typing import List
 
 import nest_asyncio
+import openai
 import uvicorn
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-import json
-
-from tenacity import (
-    retry,
-    stop_after_attempt,
-    wait_random_exponential,
-)  # for exponential backoff
- 
-from typing import List
+from pydantic import BaseModel
+from tenacity import (retry, stop_after_attempt,  # for exponential backoff
+                      wait_random_exponential)
 
 nest_asyncio.apply()
 
