@@ -144,7 +144,7 @@ async def reflections(payload: ReflectionRequestPayload):
 
 @app.get("/logs")
 async def logs():
-    with sqlite3.connect("requests.db") as conn:
+    with sqlite3.connect(db_file) as conn:
         c = conn.cursor()
         c.execute("SELECT * FROM requests")
         result = c.fetchall()
