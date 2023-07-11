@@ -98,7 +98,7 @@ async def get_reflections_chat(
     }
     '''
 
-    prompt = stripped_prompt + '''
+    prompt = request.prompt + '''
 Respond as a JSON array. Each item should have the following schema:
 ''' + desired_schema_prompt
 
