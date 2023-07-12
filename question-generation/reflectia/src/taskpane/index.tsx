@@ -18,7 +18,6 @@ const render = (Component) => {
         <AppContainer>
             <ThemeProvider>
                 <Component
-                    title={title}
                     isOfficeInitialized={isOfficeInitialized}
                 />
             </ThemeProvider>
@@ -36,6 +35,7 @@ Office.onReady(() => {
 if ((module as any).hot) {
     (module as any).hot.accept('./components/app', () => {
         const NextApp = require('./components/app').default;
+        
         render(NextApp);
     });
 }

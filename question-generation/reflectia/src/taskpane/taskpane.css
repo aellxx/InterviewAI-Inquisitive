@@ -9,11 +9,49 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
+    background: white;
 }
 
 ul {
     margin: 0;
     padding: 0;
+}   
+
+.ms-welcome {
+    margin: 10px;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+}
+
+.prompt-editor {
+    max-height: 300px;
+}
+
+.cards-container {
+
+}
+
+.card-container {
+    border: 1px solid grey;
+    cursor: pointer;
+    transition: 0.15s;
+    padding: 10px;
+    border-bottom: none;
+}
+
+.cards-container:last-child {
+    border-bottom: 1px solid grey;
+}
+
+.card-container:hover {
+    opacity: 0.8;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 .ms-welcome__header {
