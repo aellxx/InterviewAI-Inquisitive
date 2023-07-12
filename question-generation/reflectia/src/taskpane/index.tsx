@@ -1,17 +1,17 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import App from './components/App';
 import { AppContainer } from 'react-hot-loader';
+
 import { initializeIcons } from '@fluentui/font-icons-mdl2';
 import { ThemeProvider } from '@fluentui/react';
 
-/* global document, Office, module, require */
+import App from './components/app';
 
 initializeIcons();
 
 let isOfficeInitialized = false;
 
-const title = 'Reflectia Task Pane Add-in';
+const title = 'Reflectia';
 
 const render = (Component) => {
     ReactDOM.render(
@@ -34,8 +34,8 @@ Office.onReady(() => {
 });
 
 if ((module as any).hot) {
-    (module as any).hot.accept('./components/App', () => {
-        const NextApp = require('./components/App').default;
+    (module as any).hot.accept('./components/app', () => {
+        const NextApp = require('./components/app').default;
         render(NextApp);
     });
 }
