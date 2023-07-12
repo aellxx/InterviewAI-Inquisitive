@@ -1,0 +1,4 @@
+model
+wandb
+.lock
+slurm*.out
