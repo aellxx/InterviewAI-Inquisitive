@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
 const urlDev = 'https://localhost:3000/';
-const urlProd = 'https://www.contoso.com/'; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = 'https://www.contoso.com/'; // TODO: Switch to PRODUCTION DEPLOYMENT LOCATION
 
 async function getHttpsOptions() {
     const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -26,8 +26,8 @@ module.exports = async (env, options) => {
             vendor: ['react', 'react-dom', 'core-js', '@fluentui/react'],
             taskpane: [
                 'react-hot-loader/patch',
-                './src/taskpane/index.tsx',
-                './src/taskpane/taskpane.html',
+                './src/index.tsx',
+                './src/taskpane.html',
             ],
             commands: './src/commands/commands.ts',
         },
@@ -92,7 +92,7 @@ module.exports = async (env, options) => {
             }),
             new HtmlWebpackPlugin({
                 filename: 'taskpane.html',
-                template: './src/taskpane/taskpane.html',
+                template: './src/taskpane.html',
                 chunks: ['taskpane', 'vendor', 'polyfills'],
             }),
             new HtmlWebpackPlugin({

@@ -11,8 +11,6 @@ initializeIcons();
 
 let isOfficeInitialized = false;
 
-const title = 'Reflectia';
-
 const render = (Component) => {
     ReactDOM.render(
         <AppContainer>
