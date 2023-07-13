@@ -3,4 +3,4 @@ transformers
 fastapi
 uvicorn
 openai
-nest_asyncio
+tenacity

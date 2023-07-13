@@ -70,6 +70,17 @@ async_chat_with_backoff = (
 )
 
 
+def sanitize(text):
+    return text.replace('"', '').replace("'", "")
+
+
+async_chat_with_backoff = (
+    retry(wait=wait_random_exponential(
+        min=1, max=60), stop=stop_after_attempt(6))
+    (openai.ChatCompletion.acreate)
+)
+
+
 async def get_reflections_chat(
     request: ReflectionRequestPayload,
 ) -> ReflectionResponses:
